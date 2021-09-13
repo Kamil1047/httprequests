@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "name": "farmina",
+      "email": "farmina@yahoo.com",
+      "phone": "963852741",
+      "age": "19",
+      "gender": "Female",
+      "country": "London",
+      "password": "Farmina@123456",
+      "id": 3
+    },
+    {
+      "name": "sdfghmn",
+      "email": "asdfg@defghjmn",
+      "phone": "23456789",
+      "age": "34",
+      "gender": "Male",
+      "country": "USA",
+      "password": "sfggfghj",
+      "id": 4
+    },
+    {
+      "name": "sdfgh",
+      "email": "dsfgh@fg",
+      "phone": "23456789",
+      "age": "45",
+      "gender": "Male",
+      "country": "Canada",
+      "password": "sdfghj,fgdfg",
+      "id": 5
+    },
+    {
+      "name": "farmina",
+      "email": "farmina@yahoo.com",
+      "phone": "9638527410",
+      "age": "52",
+      "gender": "Female",
+      "country": "India",
+      "password": "adsfghj",
+      "id": 6
+    }
+  ]
+}
