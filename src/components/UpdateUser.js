@@ -1,63 +1,52 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
+import FormReducer from "../hooks/useReducer";
+import axios from "axios";
 import { Button } from "reactstrap";
 import { useParams } from "react-router-dom";
 
+const initialFormState = {
+  name: "",
+  email: "",
+  phone: "",
+  age: "",
+  gender: "",
+  country: "India",
+  password: "",
+};
+
 const UpdateUser = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [country, setCountry] = useState("India");
-  const [password, setPassword] = useState("");
+  const [formState, dispatch] = useReducer(FormReducer, initialFormState);
+  const [userData, setUserData] = useState("");
   const [formIsValid, setFormIsValid] = useState(false);
   const { id } = useParams();
+
   useEffect(() => {
-    fetch("http:localhost:4000/users/" + id)
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
-        setName(result.name);
-        setEmail(result.user.email);
-        setPhone(result.user.phone);
-        setAge(result.user.age);
-        setGender(result.user.gender);
-        setCountry(result.user.country);
-        setPassword(result.user.password);
-      });
-  }, [id]);
+    loadUser();
+  }, []);
   useEffect(() => {
     const Authentication = setTimeout(() => {
       setFormIsValid(
-        name.trim().length > 0 &&
-          email.includes("@") &&
-          phone.trim().length > 0 &&
-          age.trim().length > 0 &&
-          gender.trim().length > 0 &&
-          country.trim().length > 0 &&
-          password.trim().length > 6
+        formState.name.trim().length > 0
+        //   formState.email.includes("@") &&
+        //   formState.phone.trim().length > 0 &&
+        //   formState.age.trim().length > 0 &&
+        //   formState.gender.trim().length > 0 &&
+        //   formState.country.trim().length > 0 &&
+        //   formState.password.trim().length > 6
       );
     }, 500);
 
     return () => {
       clearTimeout(Authentication);
     };
-  }, [name, email, phone, age, gender, country, password]);
+  }, [formState]);
 
   const onSubmitData = (event) => {
     event.preventDefault();
-    const infoData = {
-      name: name,
-      email: email,
-      phone: phone,
-      age: age,
-      gender: gender,
-      country: country,
-      password: password,
-    };
+
     fetch(`http://localhost:4000/users/${id}`, {
       method: "PUT",
-      body: JSON.stringify(infoData),
+      body: JSON.stringify(formState),
       headers: {
         "Content-Type": "application/json",
       },
@@ -69,13 +58,19 @@ const UpdateUser = () => {
         window.location.href = "/";
       });
     document.form.reset();
-    setName("");
-    setEmail("");
-    setPhone("");
-    setAge("");
-    setGender("");
-    setCountry("");
-    setPassword("");
+  };
+
+  const loadUser = async () => {
+    const result = await axios.get(`http://localhost:4000/users/${id}`);
+
+    setUserData(result.data);
+  };
+  const handleTextChange = (e) => {
+    dispatch({
+      type: "Handle Input Text",
+      field: e.target.name,
+      payload: e.target.value,
+    });
   };
   return (
     <div className="center">
@@ -85,62 +80,76 @@ const UpdateUser = () => {
           <div>
             <label>Name : </label>
             <input
+              autoComplete="name"
+              name="name"
               type="text"
-              value={name}
-              onChange={(nameChangeEvent) =>
-                setName(nameChangeEvent.target.value)
-              }
+              // value={userData.name}
+              onChange={(e) => handleTextChange(e)}
+              autoFocus
             />
           </div>
           <div>
             <label>Email : </label>
             <input
+              autoComplete="email"
+              name="email"
               type="email"
-              value={email}
-              onChange={(emailChangeEvent) =>
-                setEmail(emailChangeEvent.target.value)
-              }
+              //value={userData.email}
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <div>
             <label>Phone : </label>
             <input
+              autoComplete="phone"
+              name="phone"
               type="number"
-              value={phone}
-              onChange={(phoneChangeEvent) =>
-                setPhone(phoneChangeEvent.target.value)
-              }
+              //value={userData.phone}
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <div>
             <label>Age : </label>
             <input
-              value={age}
+              autoComplete="age"
+              name="age"
               type="number"
-              onChange={(ageChangeEvent) => setAge(ageChangeEvent.target.value)}
+              //value={userData.age}
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <div
-            value={gender}
-            onChange={(genderChangeEvent) =>
-              setGender(genderChangeEvent.target.value)
-            }
+            name="gender"
+            autoComplete="gender"
+            onChange={(e) => handleTextChange(e)}
           >
             <label>Gender : </label>
-            <input type="radio" name="gender" value="Male" />
+            <input
+              type="radio"
+              //checked={userData.gender === "Male"}
+              name="gender"
+              value="Male"
+            />
             <label>Male</label>
-            <input type="radio" name="gender" value="Female" />
+            <input
+              type="radio"
+              //checked={userData.gender === "Female"}
+              name="gender"
+              value="Female"
+            />
             <label>Female</label>
           </div>
 
           <div
-            value={country}
-            onChange={(countryChangeEvent) =>
-              setCountry(countryChangeEvent.target.value)
-            }
+            name="country"
+            autoComplete="country"
+            onChange={(e) => handleTextChange(e)}
           >
             <label>Country: </label>
-            <select id="country" name="country">
+            <select
+              id="country" //value={userData.country}
+              name="country"
+            >
               <option value="India">India</option>
               <option value="USA">USA</option>
               <option value="Canada">Canada</option>
@@ -150,11 +159,10 @@ const UpdateUser = () => {
           <div>
             <label>Password: </label>
             <input
-              value={password}
+              name="password"
+              autoComplete="password"
               type="password"
-              onChange={(passwordChangeEvent) =>
-                setPassword(passwordChangeEvent.target.value)
-              }
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <Button type="submit" disabled={!formIsValid}>

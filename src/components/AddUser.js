@@ -1,47 +1,43 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
 import { Button } from "reactstrap";
+import FormReducer from "../hooks/useReducer";
 // import "./AddUser.css";
 
+const initialFormState = {
+  name: "",
+  email: "",
+  phone: "",
+  age: "",
+  gender: "",
+  country: "India",
+  password: "",
+};
 const AddUser = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [age, setAge] = useState("");
-  const [gender, setGender] = useState("");
-  const [country, setCountry] = useState("India");
-  const [password, setPassword] = useState("");
+  const [formState, dispatch] = useReducer(FormReducer, initialFormState);
   const [formIsValid, setFormIsValid] = useState(false);
   useEffect(() => {
     const Authentication = setTimeout(() => {
       setFormIsValid(
-        name.trim().length > 0 &&
-          email.includes("@") &&
-          phone.trim().length > 0 &&
-          age.trim().length > 0 &&
-          gender.trim().length > 0 &&
-          country.trim().length > 0 &&
-          password.trim().length > 6
+        formState.name.trim().length > 0 &&
+          formState.email.includes("@") &&
+          formState.phone.trim().length > 0 &&
+          formState.age.trim().length > 0 &&
+          formState.gender.trim().length > 0 &&
+          formState.country.trim().length > 0 &&
+          formState.password.trim().length > 6
       );
     }, 500);
 
     return () => {
       clearTimeout(Authentication);
     };
-  }, [name, email, phone, age, gender, country, password]);
-  const onSubmitData = (event) => {
-    event.preventDefault();
-    const infoData = {
-      name: name,
-      email: email,
-      phone: phone,
-      age: age,
-      gender: gender,
-      country: country,
-      password: password,
-    };
+  }, [formState]);
+  const onSubmitData = (e) => {
+    e.preventDefault();
+    // console.log(formState);
     fetch("http://localhost:4000/users", {
       method: "POST",
-      body: JSON.stringify(infoData),
+      body: JSON.stringify(formState),
       headers: {
         "Content-type": "application/json",
       },
@@ -53,13 +49,14 @@ const AddUser = () => {
         window.location.href = "/";
       });
     document.form.reset();
-    setName("");
-    setEmail("");
-    setPhone("");
-    setAge("");
-    setGender("");
-    setCountry("");
-    setPassword("");
+  };
+
+  const handleTextChange = (e) => {
+    dispatch({
+      type: "Handle Input Text",
+      field: e.target.name,
+      payload: e.target.value,
+    });
   };
 
   return (
@@ -71,10 +68,9 @@ const AddUser = () => {
             <label>Name : </label>
             <input
               autoComplete="name"
+              name="name"
               type="text"
-              onChange={(nameChangeEvent) =>
-                setName(nameChangeEvent.target.value)
-              }
+              onChange={(e) => handleTextChange(e)}
               autoFocus
             />
           </div>
@@ -82,35 +78,33 @@ const AddUser = () => {
             <label>Email : </label>
             <input
               autoComplete="email"
+              name="email"
               type="email"
-              onChange={(emailChangeEvent) =>
-                setEmail(emailChangeEvent.target.value)
-              }
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <div>
             <label>Phone : </label>
             <input
               autoComplete="phone"
+              name="phone"
               type="number"
-              onChange={(phoneChangeEvent) =>
-                setPhone(phoneChangeEvent.target.value)
-              }
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <div>
             <label>Age : </label>
             <input
               autoComplete="age"
+              name="age"
               type="number"
-              onChange={(ageChangeEvent) => setAge(ageChangeEvent.target.value)}
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <div
+            name="gender"
             autoComplete="gender"
-            onChange={(genderChangeEvent) =>
-              setGender(genderChangeEvent.target.value)
-            }
+            onChange={(e) => handleTextChange(e)}
           >
             <label>Gender : </label>
             <input type="radio" name="gender" value="Male" />
@@ -120,10 +114,9 @@ const AddUser = () => {
           </div>
 
           <div
+            name="country"
             autoComplete="country"
-            onChange={(countryChangeEvent) =>
-              setCountry(countryChangeEvent.target.value)
-            }
+            onChange={(e) => handleTextChange(e)}
           >
             <label>Country: </label>
             <select id="country" name="country">
@@ -136,11 +129,10 @@ const AddUser = () => {
           <div>
             <label>Password: </label>
             <input
+              name="password"
               autoComplete="password"
               type="password"
-              onChange={(passwordChangeEvent) =>
-                setPassword(passwordChangeEvent.target.value)
-              }
+              onChange={(e) => handleTextChange(e)}
             />
           </div>
           <Button type="submit" disabled={!formIsValid}>

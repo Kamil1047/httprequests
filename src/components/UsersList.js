@@ -12,10 +12,22 @@ const UserLists = () => {
     fetch("http://localhost:4000/users")
       .then((response) => response.json())
       .then((result) => {
+        // const data = [];
+        // for (const key in result) {
+        //   data.push({
+        //     name: result[key].name,
+        //     email: result[key].email,
+        //     phone: result[key].phone,
+        //     age: result[key].age,
+        //     gender: result[key].gender,
+        //     country: result[key].country,
+        //   });
+        // }
         setUsersList(result);
       });
   };
 
+  // console.log(usersList);
   const updateUser = (id) => {
     window.location = "/update/" + id;
   };
@@ -23,9 +35,13 @@ const UserLists = () => {
   const userDelete = (id) => {
     fetch(`http://localhost:4000/users/${id}`, {
       method: "DELETE",
-    }).then((response) => {
-      response.json();
-    });
+    })
+      .then((response) => {
+        response.json();
+      })
+      .then(() => {
+        window.location.href = "/";
+      });
   };
 
   return (
@@ -43,37 +59,33 @@ const UserLists = () => {
             <th>Age</th>
             <th>Gender</th>
             <th>Country</th>
-            <th>Edit</th>
-            <th>Delete</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody border="3">
-          {usersList.map((user) => (
+          {usersList.map((user, index) => (
             <tr key={user.id}>
-              <th scope="row">{user.id}</th>
+              <th scope="row">{index + 1}</th>
               <td>{user.name}</td>
               <td>{user.email}</td>
               <td>{user.phone}</td>
               <td>{user.age}</td>
               <td>{user.gender}</td>
               <td>{user.country}</td>
-              <td>
+              <td style={{ display: "inline-flex" }}>
                 <Button
                   className="btn btn-success"
                   onClick={() => updateUser(user.id)}
                 >
                   Edit
                 </Button>
-              </td>
-              <td>
                 <Button
                   className="btn btn-danger"
                   onClick={() => {
                     userDelete(user.id);
                   }}
                 >
-                  {" "}
-                  Delete{" "}
+                  Delete
                 </Button>
               </td>
             </tr>
@@ -81,6 +93,11 @@ const UserLists = () => {
         </tbody>
       </Table>
     </div>
+    // <div>
+    //   {usersList.map((user)=> {
+
+    //   })}
+    // </div>
   );
 };
 
